@@ -1,6 +1,6 @@
 {
   "name": "shery-logger",
-  "version": "0.1.0.1",
+  "version": "0.1.2",
   "description": "advanced console.log",
   "main": "index.js",
   "scripts": {

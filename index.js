@@ -72,12 +72,13 @@ function config(config){
 
         prettyjsonNoColor=true;
     }
+    return this;
 }
 function intro(projectInfo){
     basicLog(logo);
     if(projectInfo) basicLog("~~~ PROJECT INFORMATION ~~~\n",prettyjson.render(projectInfo,{noColor:true}),"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     basicLog("\n");
-    
+    return this;
     
 }
 
