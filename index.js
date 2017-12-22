@@ -174,6 +174,11 @@ function info () {
 //     this.test="hello test"
 //     return this;
 // }
+ function clear () {
+    process.stdout.write('\033c');
+    process.stdout.write("\x1B[2J");
+    
+  }
 
 console.config=config;
 console.intro=intro;
@@ -181,3 +186,6 @@ console.log=log;
 console.info=info;
 console.error=error;
 console.warning=warning;
+console.clear=clear;
+console.ok=ok;
+console.plain=basicLog;
