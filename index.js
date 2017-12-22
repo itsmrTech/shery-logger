@@ -180,6 +180,3 @@ console.log=log;
 console.info=info;
 console.error=error;
 console.warning=warning;
-
-console.intro();
-console.log("hey").warning("pfff",34);
