@@ -1,7 +1,7 @@
 var basicLog = console.log;
 var prettyjson = require('prettyjson');
 var validator = require('validator');
-var logo=`
+var logo = `
 ████████████████████████████████████████████████████████████████████████████████
 ████████████████████████████████████████████████████████████████████████████████
 ███ ▄▄█████ ███ █████▄▄▄▄█████ ▄▄▀█████ █▀▄██████ ██████▄▄▄▄████▀▄▄▄▀████ ███ ██
@@ -36,8 +36,8 @@ var styles = {
     BgCyan: "\x1b[46m",
     BgWhite: "\x1b[47m",
 }
-var activeLevel=3;
-var prettyjsonNoColor=false;
+var activeLevel = 3;
+var prettyjsonNoColor = false;
 /**
  * this will customize logging
  * @param {Object} config 
@@ -46,40 +46,43 @@ var prettyjsonNoColor=false;
  *  
  * 
  */
-function config(config){
-    if(!config) return this;
-    if(config.activeLevel ||config.activeLevel==0) activeLevel=config.activeLevel;
-    if(config.noColor) {
-        var color=styles.Reset;
-        var bgcolor=styles.Reset;
-        styles.FgBlack=color;
-        styles.FgBlue=color;
-        styles.FgCyan=color;
-        styles.FgGreen=color;
-        styles.FgMagenta=color;
-        styles.FgRed=color;
-        styles.FgWhite=color;
-        styles.FgYellow=color;
-        
-        styles.B=color;
-        styles.BgBlue=color;
-        styles.BgCyan=color;
-        styles.BgGreen=color;
-        styles.BgMagenta=color;
-        styles.BgRed=color;
-        styles.BgWhite=color;
-        styles.BgYellow=color;
+function config(config) {
+    if (!config) return this;
+    if (config.activeLevel || config.activeLevel == 0) activeLevel = config.activeLevel;
+    if (config.noColor) {
+        var color = styles.Reset;
+        var bgcolor = styles.Reset;
+        styles.FgBlack = color;
+        styles.FgBlue = color;
+        styles.FgCyan = color;
+        styles.FgGreen = color;
+        styles.FgMagenta = color;
+        styles.FgRed = color;
+        styles.FgWhite = color;
+        styles.FgYellow = color;
 
-        prettyjsonNoColor=true;
+        styles.B = color;
+        styles.BgBlue = color;
+        styles.BgCyan = color;
+        styles.BgGreen = color;
+        styles.BgMagenta = color;
+        styles.BgRed = color;
+        styles.BgWhite = color;
+        styles.BgYellow = color;
+
+        prettyjsonNoColor = true;
     }
     return this;
 }
-function intro(projectInfo){
+
+function intro(projectInfo) {
     basicLog(logo);
-    if(projectInfo) basicLog("~~~ PROJECT INFORMATION ~~~\n",prettyjson.render(projectInfo,{noColor:true}),"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    if (projectInfo) basicLog("~~~ PROJECT INFORMATION ~~~\n", prettyjson.render(projectInfo, {
+        noColor: true
+    }), "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     basicLog("\n");
     return this;
-    
+
 }
 
 
@@ -89,30 +92,43 @@ function intro(projectInfo){
  * @param {*[]} args arguments to print
  * @param {this} that console object
  */
-var print=function (args,that) {
+var print = function (args, that) {
 
-    if(!that.mode) that.mode="";
+    if (!that.mode) that.mode = "";
     var text = that.mode;
+
 
     // text+=styles.FgBlack;
     // basicLog(that.pre)
-    
+
     // that.pre.forEach(function(item){
     //     text+=item+" > "
     // });
-    // text+=styles.Reset;
+    text += styles.Reset;
 
     for (var i = 0; i < args.length; i++) {
-        var isjson = validator.isJSON(JSON.stringify(args[i]));
-        if (isjson) text += "\n{\n";
-        text += prettyjson.render(args[i], {
-            noColor: prettyjsonNoColor,
-            keysColor: 'blue',
-            dashColor: 'blue',
-            numberColor: 'magenta',
-            stringColor: 'white'
-        }) + " ";
-        if (isjson) text += "\n}\n"
+        try {
+            var isjson = validator.isJSON(JSON.stringify(args[i]));
+
+            var inlineArrays = true;
+            if (isjson) {
+                text += "\n{\n";
+                basicLog(args[i])
+                if (args[i].length < 10) inlineArrays = true;
+            }
+
+            text += prettyjson.render(args[i], {
+                noColor: prettyjsonNoColor,
+                keysColor: 'blue',
+                dashColor: 'blue',
+                numberColor: 'magenta',
+                stringColor: 'white',
+                inlineArrays
+            }) + " ";
+            if (isjson) text += "\n}\n"
+        } catch (e) {
+            text+=args[i]+" ";
+        }
     }
     basicLog(text, styles.Reset);
     return this;
@@ -120,49 +136,49 @@ var print=function (args,that) {
 /**
  * this will print a log.
  */
-function log(){
-    if(activeLevel<3)return this;
+function log() {
+    if (activeLevel < 3) return this;
     this.mode = styles.FgCyan + "LOG >> "
-    print(arguments,this);
+    print(arguments, this);
     return this
 }
 /**
  * this will print a success message.
  */
-function ok () {
-    if(activeLevel<3)return this;    
+function ok() {
+    if (activeLevel < 3) return this;
     this.mode = styles.FgGreen + "SUCCESS >> "
-    print(arguments,this);
+    print(arguments, this);
     return this;
 }
 /**
  * this will print an error message.
  */
-function error () {
-    if(activeLevel<1)return this;
-    
+function error() {
+    if (activeLevel < 1) return this;
+
     this.mode = styles.FgRed + "ERROR >> ";
-    print(arguments,this);
+    print(arguments, this);
     return this;
 }
 /**
  * this will print a warning message.
  */
-function warning () {
-    if(activeLevel<2)return this;
-    
+function warning() {
+    if (activeLevel < 2) return this;
+
     this.mode = styles.FgYellow + "WARNING >> ";
-    print(arguments,this);
+    print(arguments, this);
     return this;
 }
 /**
  * this will print an info message.
  */
-function info () {
-    if(activeLevel<2)return this;
-    
+function info() {
+    if (activeLevel < 2) return this;
+
     this.mode = styles.FgBlue + "INFO >> ";
-    print(arguments,this);
+    print(arguments, this);
     return this;
 }
 //TODO:add scope later
@@ -174,18 +190,18 @@ function info () {
 //     this.test="hello test"
 //     return this;
 // }
- function clear () {
+function clear() {
     process.stdout.write('\033c');
     process.stdout.write("\x1B[2J");
-    
-  }
 
-console.config=config;
-console.intro=intro;
-console.log=log;
-console.info=info;
-console.error=error;
-console.warning=warning;
-console.clear=clear;
-console.ok=ok;
-console.plain=basicLog;
+}
+
+console.config = config;
+console.intro = intro;
+console.log = log;
+console.info = info;
+console.error = error;
+console.warning = warning;
+console.clear = clear;
+console.ok = ok;
+console.plain = basicLog;
