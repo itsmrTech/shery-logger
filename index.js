@@ -113,7 +113,6 @@ var print = function (args, that) {
             var inlineArrays = true;
             if (isjson) {
                 text += "\n{\n";
-                basicLog(args[i])
                 if (args[i].length < 10) inlineArrays = true;
             }
 
