@@ -105,17 +105,17 @@ var print = function (args, that) {
     //     text+=item+" > "
     // });
     text += styles.Reset;
-
+    // text+=prettyjson.renderString("hello")
     for (var i = 0; i < args.length; i++) {
         try {
             var isjson = validator.isJSON(JSON.stringify(args[i]));
 
-            var inlineArrays = true;
+            var inlineArrays = false;
             if (isjson) {
                 text += "\n{\n";
                 if (args[i].length < 10) inlineArrays = true;
             }
-
+            if(String(args[i]).indexOf("["+typeof args[i])<0)args[i]=String(args[i])
             text += prettyjson.render(args[i], {
                 noColor: prettyjsonNoColor,
                 keysColor: 'blue',
@@ -204,3 +204,4 @@ console.warning = warning;
 console.clear = clear;
 console.ok = ok;
 console.plain = basicLog;
+
