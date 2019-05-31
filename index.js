@@ -1,6 +1,8 @@
 var basicLog = console.log;
 var prettyjson = require('prettyjson');
 var validator = require('validator');
+var art = require('ascii-art');
+art.Figlet.fontPath = __dirname+'/fonts/';;
 var logo = `
 ████████████████████████████████████████████████████████████████████████████████
 ████████████████████████████████████████████████████████████████████████████████
@@ -38,6 +40,7 @@ var styles = {
 }
 var activeLevel = 3;
 var prettyjsonNoColor = false;
+var prettify=false
 /**
  * this will customize logging
  * @param {Object} config 
@@ -72,16 +75,40 @@ function config(config) {
 
         prettyjsonNoColor = true;
     }
+    if(config.prettify==true)prettify=true
     return this;
 }
-
+function drawLogo(lg,callback){
+    if(lg){
+        
+        if(typeof(lg)=="object"){
+            var text=lg.text;
+            var font=lg.font;
+            if(!font)font="doom"
+        }
+        else {
+            var text=lg;
+            var font="doom"
+        }
+        art.font(text,font,function(rendered){
+            logo=rendered
+            callback()
+        })
+    }
+    else callback()
+}
 function intro(projectInfo) {
-    basicLog(logo);
-    if (projectInfo) basicLog("~~~ PROJECT INFORMATION ~~~\n", prettyjson.render(projectInfo, {
-        noColor: true
-    }), "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    basicLog("\n");
-    return this;
+    
+    console.log(projectInfo.logo)
+    drawLogo(projectInfo.logo,function(){
+
+        basicLog(logo);
+        if (projectInfo) basicLog("~~~ PROJECT INFORMATION ~~~\n", prettyjson.render(projectInfo, {
+            noColor: true
+        }), "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        basicLog("\n");
+        return this;
+    })
 
 }
 
@@ -93,7 +120,7 @@ function intro(projectInfo) {
  * @param {this} that console object
  */
 var print = function (args, that) {
-
+    if(that.prettify!=false&&that.prettify!=true)that.prettify=prettify
     if (!that.mode) that.mode = "";
     var text = that.mode;
 
@@ -106,31 +133,47 @@ var print = function (args, that) {
     // });
     text += styles.Reset;
     // text+=prettyjson.renderString("hello")
-    for (var i = 0; i < args.length; i++) {
-        try {
-            var isjson = validator.isJSON(JSON.stringify(args[i]));
+    if (that.prettify) {
 
-            var inlineArrays = false;
-            if (isjson) {
-                text += "\n{\n";
-                if (args[i].length < 10) inlineArrays = true;
+        for (var i = 0; i < args.length; i++) {
+            try {
+                var isjson = validator.isJSON(JSON.stringify(args[i]));
+
+                var inlineArrays = false;
+                if (isjson) {
+                    text += "\n{\n";
+                    if (args[i].length < 10) inlineArrays = true;
+                }
+                if (String(args[i]).indexOf("[" + typeof args[i]) < 0) args[i] = String(args[i])
+                text += prettyjson.render(args[i], {
+                    noColor: prettyjsonNoColor,
+                    keysColor: 'blue',
+                    dashColor: 'blue',
+                    numberColor: 'magenta',
+                    stringColor: 'white',
+                    inlineArrays
+                }) + " ";
+                if (isjson) text += "\n}\n"
+            } catch (e) {
+                text += args[i] + " ";
             }
-            if(String(args[i]).indexOf("["+typeof args[i])<0)args[i]=String(args[i])
-            text += prettyjson.render(args[i], {
-                noColor: prettyjsonNoColor,
-                keysColor: 'blue',
-                dashColor: 'blue',
-                numberColor: 'magenta',
-                stringColor: 'white',
-                inlineArrays
-            }) + " ";
-            if (isjson) text += "\n}\n"
-        } catch (e) {
-            text+=args[i]+" ";
         }
+        basicLog(text, styles.Reset);
     }
-    basicLog(text, styles.Reset);
+    else {
+        
+        basicLog(text,...args, styles.Reset);
+
+    }
+
     return this;
+}
+/**
+ * this will set variables for this thread of logs.
+ */
+function set(config={prettify:false}) {
+    if(config.prettify) this.prettify=true
+    return this
 }
 /**
  * this will print a log.
@@ -204,4 +247,5 @@ console.warning = warning;
 console.clear = clear;
 console.ok = ok;
 console.plain = basicLog;
+console.set = set;
 

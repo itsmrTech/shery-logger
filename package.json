@@ -1,6 +1,6 @@
 {
   "name": "shery-logger",
-  "version": "0.1.7",
+  "version": "0.2.1",
   "description": "advanced console.log",
   "main": "index.js",
   "scripts": {
@@ -14,6 +14,7 @@
   "author": "mrTech",
   "license": "ISC",
   "dependencies": {
+    "ascii-art": "^1.5.1",
     "prettyjson": "^1.2.1",
     "validator": "^9.2.0"
   }
