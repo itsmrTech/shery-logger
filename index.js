@@ -125,7 +125,7 @@ function intro(projectInfo) {
  * @param {this} that console object
  */
 var print = function (args, that) {
-    if(showingNameSpaces!=[]){
+    if(showingNameSpaces.length>0){
         if(!that.namespace)return
         if(!showingNameSpaces.find(function(i){
             return i==that.namespace
@@ -178,11 +178,11 @@ var print = function (args, that) {
         basicLog(text,...args, styles.Reset);
 
     }
-
-    return this;
+    
+    // return this;
 }
 function showOnly(namespaces=[]){
-    if(typeof(namespaces)=="string")namespaces=[namespaces]
+    if(typeof(namespaces)!="object")namespaces=[namespaces]
     showingNameSpaces=namespaces
     return;
 }
@@ -200,6 +200,7 @@ function log() {
     if (activeLevel < 3) return this;
     this.mode = styles.FgCyan + "LOG >> "
     print(arguments, this);
+    this.namespace=undefined
     return this
 }
 /**
@@ -209,6 +210,8 @@ function ok() {
     if (activeLevel < 3) return this;
     this.mode = styles.FgGreen + "SUCCESS >> "
     print(arguments, this);
+    this.namespace=undefined
+
     return this;
 }
 /**
@@ -219,6 +222,8 @@ function error() {
 
     this.mode = styles.FgRed + "ERROR >> ";
     print(arguments, this);
+    this.namespace=undefined
+
     return this;
 }
 /**
@@ -229,6 +234,8 @@ function warning() {
 
     this.mode = styles.FgYellow + "WARNING >> ";
     print(arguments, this);
+    this.namespace=undefined
+
     return this;
 }
 /**
@@ -239,6 +246,8 @@ function info() {
 
     this.mode = styles.FgBlue + "INFO >> ";
     print(arguments, this);
+    this.namespace=undefined
+
     return this;
 }
 //TODO:add scope later
@@ -262,6 +271,7 @@ console.log = log;
 console.info = info;
 console.error = error;
 console.warning = warning;
+console.warn = warning;
 console.clear = clear;
 console.ok = ok;
 console.plain = basicLog;
@@ -269,4 +279,3 @@ console.set = set;
 console.showOnly=showOnly;
 console.namespace=namespace;
 console.ns=namespace;
-
