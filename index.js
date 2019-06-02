@@ -41,6 +41,7 @@ var styles = {
 var activeLevel = 3;
 var prettyjsonNoColor = false;
 var prettify=false
+var showingNameSpaces=[]
 /**
  * this will customize logging
  * @param {Object} config 
@@ -76,6 +77,10 @@ function config(config) {
         prettyjsonNoColor = true;
     }
     if(config.prettify==true)prettify=true
+    return this;
+}
+function namespace(name){
+    this.namespace=name;
     return this;
 }
 function drawLogo(lg,callback){
@@ -120,6 +125,14 @@ function intro(projectInfo) {
  * @param {this} that console object
  */
 var print = function (args, that) {
+    if(showingNameSpaces!=[]){
+        if(!that.namespace)return
+        if(!showingNameSpaces.find(function(i){
+            return i==that.namespace
+        })) return;
+    }
+
+
     if(that.prettify!=false&&that.prettify!=true)that.prettify=prettify
     if (!that.mode) that.mode = "";
     var text = that.mode;
@@ -167,6 +180,11 @@ var print = function (args, that) {
     }
 
     return this;
+}
+function showOnly(namespaces=[]){
+    if(typeof(namespaces)=="string")namespaces=[namespaces]
+    showingNameSpaces=namespaces
+    return;
 }
 /**
  * this will set variables for this thread of logs.
@@ -248,4 +266,7 @@ console.clear = clear;
 console.ok = ok;
 console.plain = basicLog;
 console.set = set;
+console.showOnly=showOnly;
+console.namespace=namespace;
+console.ns=namespace;
 
